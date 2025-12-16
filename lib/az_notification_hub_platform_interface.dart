@@ -96,4 +96,14 @@ abstract class AzureNotificationHubPlatform extends PlatformInterface {
   Future<Map<String, dynamic>?> getInitialMessage() {
     throw UnimplementedError('getInitialMessage() has not been implemented.');
   }
+
+  /// Get the installation ID for the device.
+  Future<String> getInstallationId() {
+    throw UnimplementedError('getInstallationId() has not been implemented.');
+  }
+
+  /// Get the push channel for the device.
+  Future<String> getPushChannel() {
+    throw UnimplementedError('getPushChannel() has not been implemented.');
+  }
 }

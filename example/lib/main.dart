@@ -63,6 +63,8 @@ class _MyAppState extends State<MyApp> {
   late StreamSubscription<Map<String, Object?>> _messageSubscription;
   late StreamSubscription<Map<String, Object?>> _messageOpenedAppSubscription;
   late Future<List<String>> _tagsFuture;
+  late Future<String> _installationIdFuture;
+  late Future<String> _pushChannelFuture;
   bool _isSettingTemplateIn = false;
   bool _isRemovingTemplateIn = false;
 
@@ -79,6 +81,8 @@ class _MyAppState extends State<MyApp> {
     });
 
     _tagsFuture = AzureNotificationHub.instance.getTags();
+    _installationIdFuture = AzureNotificationHub.instance.getInstallationId();
+    _pushChannelFuture = AzureNotificationHub.instance.getPushChannel();
   }
 
   @override
@@ -102,6 +106,36 @@ class _MyAppState extends State<MyApp> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              const SizedBox(height: 16),
+              Text(
+                "Installation ID",
+                style: Theme.of(context).textTheme.headlineLarge,
+              ),
+              FutureBuilder(
+                future: _installationIdFuture,
+                builder: (context, snapshot) {
+                  return switch (snapshot) {
+                    (AsyncSnapshot<String> s) when s.hasData => SelectableText(s.data!),
+                    (AsyncSnapshot<String> s) when s.hasError => Text('${s.error}'),
+                    _ => const Text('?'),
+                  };
+                },
+              ),
+              const SizedBox(height: 16),
+              Text(
+                "Push Channel",
+                style: Theme.of(context).textTheme.headlineLarge,
+              ),
+              FutureBuilder(
+                future: _pushChannelFuture,
+                builder: (context, snapshot) {
+                  return switch (snapshot) {
+                    (AsyncSnapshot<String> s) when s.hasData => SelectableText(s.data!),
+                    (AsyncSnapshot<String> s) when s.hasError => Text('${s.error}'),
+                    _ => const Text('?'),
+                  };
+                },
+              ),
               Text("Tags", style: Theme.of(context).textTheme.headlineLarge),
               Row(
                 children: [

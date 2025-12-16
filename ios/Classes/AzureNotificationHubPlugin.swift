@@ -34,6 +34,10 @@ public class AzureNotificationHubPlugin: NSObject, FlutterPlugin, MSNotification
             setTemplate(body: (call.arguments as! [String:Any?])["body"] as! String, result: result)
         case "AzNotificationHub.removeTemplate":
             removeTemplate(result: result)
+        case "AzNotificationHub.getInstallationId":
+            getInstallationId(result: result)
+        case "AzNotificationHub.getPushChannel":
+            getPushChannel(result: result)
         default:
             result(FlutterMethodNotImplemented)
         }
@@ -115,6 +119,16 @@ public class AzureNotificationHubPlugin: NSObject, FlutterPlugin, MSNotification
     private func removeTemplate(result: @escaping FlutterResult) {
         let success = MSNotificationHub.removeTemplate(forKey: DEFAULT_TEMPLATE_NAME)
         result(success)
+    }
+    
+    private func getInstallationId(result: @escaping FlutterResult) {
+        let installationId = MSNotificationHub.getInstallationId()
+        result(installationId)
+    }
+    
+    private func getPushChannel(result: @escaping FlutterResult) {
+        let pushChannel = MSNotificationHub.getPushChannel()
+        result(pushChannel)
     }
     
 }

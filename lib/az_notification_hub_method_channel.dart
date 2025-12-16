@@ -156,4 +156,20 @@ class MethodChannelAzureNotificationHub extends AzureNotificationHubPlatform {
         await methodChannel.invokeMethod('AzNotificationHub.getInitialMessage');
     return result == null ? result : Map<String, dynamic>.from(result);
   }
+
+  @override
+  Future<String> getInstallationId() async {
+    final result = await methodChannel.invokeMethod(
+      'AzNotificationHub.getInstallationId',
+    );
+    return result;
+  }
+
+  @override
+  Future<String> getPushChannel() async {
+    final result = await methodChannel.invokeMethod(
+      'AzNotificationHub.getPushChannel',
+    );
+    return result;
+  }
 }

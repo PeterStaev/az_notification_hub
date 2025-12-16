@@ -62,4 +62,14 @@ class AzureNotificationHub {
   Future<bool> removeTemplate() {
     return AzureNotificationHubPlatform.instance.removeTemplate();
   }
+
+  /// Get the installation ID for the device.
+  Future<String> getInstallationId() {
+    return AzureNotificationHubPlatform.instance.getInstallationId();
+  }
+
+  /// Get the push channel for the device.
+  Future<String> getPushChannel() {
+    return AzureNotificationHubPlatform.instance.getPushChannel();
+  }
 }
