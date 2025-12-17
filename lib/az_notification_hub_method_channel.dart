@@ -159,17 +159,17 @@ class MethodChannelAzureNotificationHub extends AzureNotificationHubPlatform {
 
   @override
   Future<String> getInstallationId() async {
-    final result = await methodChannel.invokeMethod(
+    final result = await methodChannel.invokeMethod<String>(
       'AzNotificationHub.getInstallationId',
     );
-    return result;
+    return result ?? '';
   }
 
   @override
   Future<String> getPushChannel() async {
-    final result = await methodChannel.invokeMethod(
+    final result = await methodChannel.invokeMethod<String>(
       'AzNotificationHub.getPushChannel',
     );
-    return result;
+    return result ?? '';
   }
 }
