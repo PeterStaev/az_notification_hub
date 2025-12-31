@@ -72,4 +72,14 @@ class AzureNotificationHub {
   Future<String> getPushChannel() {
     return AzureNotificationHubPlatform.instance.getPushChannel();
   }
+
+  /// Set the user ID for the device.
+  Future<bool> setUserId(String userId) {
+    return AzureNotificationHubPlatform.instance.setUserId(userId);
+  }
+
+  /// Get the user ID for the device.
+  Future<String> getUserId() {
+    return AzureNotificationHubPlatform.instance.getUserId();
+  }
 }

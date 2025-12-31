@@ -172,4 +172,21 @@ class MethodChannelAzureNotificationHub extends AzureNotificationHubPlatform {
     );
     return result ?? '';
   }
+
+  @override
+  Future<bool> setUserId(String userId) async {
+    final success = await methodChannel.invokeMethod<bool>(
+      'AzNotificationHub.setUserId',
+      {'userId': userId},
+    );
+    return success ?? false;
+  }
+
+  @override
+  Future<String> getUserId() async {
+    final result = await methodChannel.invokeMethod<String>(
+      'AzNotificationHub.getUserId',
+    );
+    return result ?? '';
+  }
 }

@@ -106,4 +106,14 @@ abstract class AzureNotificationHubPlatform extends PlatformInterface {
   Future<String> getPushChannel() {
     throw UnimplementedError('getPushChannel() has not been implemented.');
   }
+
+  /// Set the user ID for the device.
+  Future<bool> setUserId(String userId) {
+    throw UnimplementedError('setUserId() has not been implemented.');
+  }
+
+  /// Get the user ID for the device.
+  Future<String> getUserId() {
+    throw UnimplementedError('getUserId() has not been implemented.');
+  }
 }
