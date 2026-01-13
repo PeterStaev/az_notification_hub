@@ -67,10 +67,16 @@ class _MyAppState extends State<MyApp> {
   late Future<String> _pushChannelFuture;
   bool _isSettingTemplateIn = false;
   bool _isRemovingTemplateIn = false;
+  Map<String, dynamic>? _initialMessage;
+  bool _checkedInitialMessage = false;
 
   @override
   void initState() {
     super.initState();
+    
+    // Check for cold start notification
+    _checkInitialMessage();
+    
     _messageSubscription =
         AzureNotificationHub.instance.onMessage.listen((message) {
       print('onMessage: $message');
@@ -83,6 +89,27 @@ class _MyAppState extends State<MyApp> {
     _tagsFuture = AzureNotificationHub.instance.getTags();
     _installationIdFuture = AzureNotificationHub.instance.getInstallationId();
     _pushChannelFuture = AzureNotificationHub.instance.getPushChannel();
+  }
+
+  Future<void> _checkInitialMessage() async {
+    try {
+      final initialMessage = await AzureNotificationHub.instance.getInitialMessage();
+      setState(() {
+        _initialMessage = initialMessage;
+        _checkedInitialMessage = true;
+      });
+      
+      if (initialMessage != null) {
+        print('Cold Start - Initial Message: $initialMessage');
+      } else {
+        print('No initial message - app was not launched from notification');
+      }
+    } catch (e) {
+      print('Error getting initial message: $e');
+      setState(() {
+        _checkedInitialMessage = true;
+      });
+    }
   }
 
   @override
@@ -107,6 +134,91 @@ class _MyAppState extends State<MyApp> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(height: 16),
+              // Cold Start Notification Section
+              if (_checkedInitialMessage) ...[
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: _initialMessage != null
+                        ? Colors.green.shade50
+                        : Colors.grey.shade100,
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(
+                      color: _initialMessage != null
+                          ? Colors.green.shade300
+                          : Colors.grey.shade300,
+                    ),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(
+                            _initialMessage != null
+                                ? Icons.notifications_active
+                                : Icons.notifications_none,
+                            color: _initialMessage != null
+                                ? Colors.green.shade700
+                                : Colors.grey.shade600,
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            "Cold Start Notification",
+                            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                                  color: _initialMessage != null
+                                      ? Colors.green.shade700
+                                      : Colors.grey.shade700,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        _initialMessage != null
+                            ? "✓ App was launched from a notification tap!"
+                            : "App started normally (not from notification)",
+                        style: TextStyle(
+                          color: _initialMessage != null
+                              ? Colors.green.shade700
+                              : Colors.grey.shade600,
+                        ),
+                      ),
+                      if (_initialMessage != null) ...[
+                        const SizedBox(height: 12),
+                        const Divider(),
+                        const SizedBox(height: 8),
+                        Text(
+                          "Notification Data:",
+                          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                fontWeight: FontWeight.bold,
+                              ),
+                        ),
+                        const SizedBox(height: 8),
+                        Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(4),
+                            border: Border.all(color: Colors.grey.shade300),
+                          ),
+                          child: SelectableText(
+                            json.encode(_initialMessage, toEncodable: (obj) => obj.toString()),
+                            style: const TextStyle(
+                              fontFamily: 'monospace',
+                              fontSize: 12,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 24),
+              ],
               Text(
                 "Installation ID",
                 style: Theme.of(context).textTheme.headlineLarge,

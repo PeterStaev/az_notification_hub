@@ -9,6 +9,7 @@ public class AzureNotificationHubPlugin: NSObject, FlutterPlugin, MSNotification
     private var channel: FlutterMethodChannel?
     private var notificationResponseCompletionHandler: (() -> Void)?
     private var notificationPresentationCompletionHandler: ((UNNotificationPresentationOptions) -> Void)?
+    private var initialNotification: [AnyHashable: Any]?
     
     public static func register(with registrar: FlutterPluginRegistrar) {
         let channel =  FlutterMethodChannel(name: "plugins.flutter.io/azure_notification_hub", binaryMessenger: registrar.messenger())
@@ -38,6 +39,8 @@ public class AzureNotificationHubPlugin: NSObject, FlutterPlugin, MSNotification
             getInstallationId(result: result)
         case "AzNotificationHub.getPushChannel":
             getPushChannel(result: result)
+        case "AzNotificationHub.getInitialMessage":
+            getInitialMessage(result: result)
         default:
             result(FlutterMethodNotImplemented)
         }
@@ -129,6 +132,24 @@ public class AzureNotificationHubPlugin: NSObject, FlutterPlugin, MSNotification
     private func getPushChannel(result: @escaping FlutterResult) {
         let pushChannel = MSNotificationHub.getPushChannel()
         result(pushChannel)
+    }
+    
+    private func getInitialMessage(result: @escaping FlutterResult) {
+        if let notification = initialNotification {
+            // Clear the initial notification after returning it so it's not read twice
+            initialNotification = nil
+            result(notification)
+        } else {
+            result(nil)
+        }
+    }
+    
+    public func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [AnyHashable : Any] = [:]) -> Bool {
+        // Check if the app was launched from a notification tap
+        if let remoteNotification = launchOptions[UIApplication.LaunchOptionsKey.remoteNotification] as? [AnyHashable: Any] {
+            initialNotification = remoteNotification
+        }
+        return true
     }
     
 }

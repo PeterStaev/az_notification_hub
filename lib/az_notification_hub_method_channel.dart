@@ -148,13 +148,9 @@ class MethodChannelAzureNotificationHub extends AzureNotificationHubPlatform {
 
   @override
   Future<Map<String, dynamic>?> getInitialMessage() async {
-    if (defaultTargetPlatform != TargetPlatform.android) {
-      return Future.value(null);
-    }
-
     final result =
         await methodChannel.invokeMethod('AzNotificationHub.getInitialMessage');
-    return result == null ? result : Map<String, dynamic>.from(result);
+    return result == null ? null : Map<String, dynamic>.from(result);
   }
 
   @override

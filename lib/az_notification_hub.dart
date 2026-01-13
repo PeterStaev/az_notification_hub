@@ -72,4 +72,15 @@ class AzureNotificationHub {
   Future<String> getPushChannel() {
     return AzureNotificationHubPlatform.instance.getPushChannel();
   }
+
+  /// Get the initial message that caused the app to open from a terminated state.
+  ///
+  /// Returns the notification payload if the app was launched by tapping a notification.
+  /// Returns null if the app was not launched by a notification tap.
+  ///
+  /// This method is useful for handling "cold start" scenarios where the app
+  /// was completely terminated and the user tapped on a notification to reopen it.
+  Future<Map<String, dynamic>?> getInitialMessage() {
+    return AzureNotificationHubPlatform.instance.getInitialMessage();
+  }
 }

@@ -92,7 +92,8 @@ abstract class AzureNotificationHubPlatform extends PlatformInterface {
 
   /// Get the initial message that caused the app to open.
   ///
-  /// Usable only for Android  and will have a value only if the app was terminated and the user clicked on a notification.
+  /// Returns the notification payload if the app was terminated (cold start) and the user tapped on a notification.
+  /// Returns null if the app was not launched by tapping a notification.
   Future<Map<String, dynamic>?> getInitialMessage() {
     throw UnimplementedError('getInitialMessage() has not been implemented.');
   }

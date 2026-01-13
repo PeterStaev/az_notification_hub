@@ -1,18 +1,15 @@
 PODS:
-  - azure_notification_hub (1.0.0):
+  - az_notification_hub (1.0.0):
     - AzureNotificationHubs-iOS (> 3)
     - Flutter
   - AzureNotificationHubs-iOS (3.1.5)
   - Flutter (1.0.0)
-  - integration_test (0.0.1):
-    - Flutter
   - permission_handler_apple (9.3.0):
     - Flutter
 
 DEPENDENCIES:
-  - azure_notification_hub (from `.symlinks/plugins/azure_notification_hub/ios`)
+  - az_notification_hub (from `.symlinks/plugins/az_notification_hub/ios`)
   - Flutter (from `Flutter`)
-  - integration_test (from `.symlinks/plugins/integration_test/ios`)
   - permission_handler_apple (from `.symlinks/plugins/permission_handler_apple/ios`)
 
 SPEC REPOS:
@@ -20,22 +17,19 @@ SPEC REPOS:
     - AzureNotificationHubs-iOS
 
 EXTERNAL SOURCES:
-  azure_notification_hub:
-    :path: ".symlinks/plugins/azure_notification_hub/ios"
+  az_notification_hub:
+    :path: ".symlinks/plugins/az_notification_hub/ios"
   Flutter:
     :path: Flutter
-  integration_test:
-    :path: ".symlinks/plugins/integration_test/ios"
   permission_handler_apple:
     :path: ".symlinks/plugins/permission_handler_apple/ios"
 
 SPEC CHECKSUMS:
-  azure_notification_hub: fe6d3a940ea24a7a3e6c14f6482bae92c442d9ea
+  az_notification_hub: 437b2488846493140d65070c12ae493566a5598f
   AzureNotificationHubs-iOS: e5de62f44d7915a5cc3c5194ddc57cf2ee78873e
-  Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
-  integration_test: ce0a3ffa1de96d1a89ca0ac26fca7ea18a749ef4
+  Flutter: cabc95a1d2626b1b06e7179b784ebcf0c0cde467
   permission_handler_apple: 9878588469a2b0d0fc1e048d9f43605f92e6cec2
 
-PODFILE CHECKSUM: 819463e6a0290f5a72f145ba7cde16e8b6ef0796
+PODFILE CHECKSUM: 4f1c12611da7338d21589c0b2ecd6bd20b109694
 
-COCOAPODS: 1.15.0
+COCOAPODS: 1.15.2
