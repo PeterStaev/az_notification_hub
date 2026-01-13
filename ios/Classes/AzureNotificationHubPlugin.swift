@@ -5,7 +5,7 @@ import Foundation
 
 let DEFAULT_TEMPLATE_NAME = "FANH DEFAULT TEMPLATE"
 
-public class AzureNotificationHubPlugin: NSObject, FlutterPlugin, MSNotificationHubDelegate {
+public class AzureNotificationHubPlugin: NSObject, FlutterPlugin, MSNotificationHubDelegate, UNUserNotificationCenterDelegate {
     private var channel: FlutterMethodChannel?
     private var notificationResponseCompletionHandler: (() -> Void)?
     private var notificationPresentationCompletionHandler: ((UNNotificationPresentationOptions) -> Void)?
@@ -51,6 +51,11 @@ public class AzureNotificationHubPlugin: NSObject, FlutterPlugin, MSNotification
     }
     
     public func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
+        // Save the payload to our buffer variable for getInitialMessage
+        // This catches the tap event when the app is "pre-warmed" or launched via notification
+        if initialNotification == nil {
+            initialNotification = response.notification.request.content.userInfo
+        }
         notificationResponseCompletionHandler = completionHandler
     }
     
