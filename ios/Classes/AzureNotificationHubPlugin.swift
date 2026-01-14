@@ -58,7 +58,7 @@ public class AzureNotificationHubPlugin: NSObject, FlutterPlugin, MSNotification
 
         // Only set initial notification if we haven't already captured one from cold start
         // This handles the case where the app was in background (not killed)
-        if initialNotification == nil && !hasColdStartNotification {
+        if initialNotification == nil {
             let userInfo = response.notification.request.content.userInfo
             initialNotification = formatNotificationForFlutter(userInfo: userInfo, notification: response.notification)
             print("📝 Stored notification from didReceive (background state)")
@@ -78,12 +78,6 @@ public class AzureNotificationHubPlugin: NSObject, FlutterPlugin, MSNotification
             jsonNotification["body"] = message.body
         }
         jsonNotification["data"] = message.userInfo
-
-        // If this is the cold start notification being processed, update our stored version
-        if hasColdStartNotification && initialNotification == nil {
-            initialNotification = jsonNotification
-            print("✅ Updated cold start notification with processed data")
-        }
 
         if (notificationResponseCompletionHandler != nil) {
             channel?.invokeMethod("AzNotificationHub.onMessageOpenedApp", arguments: jsonNotification)
@@ -107,12 +101,6 @@ public class AzureNotificationHubPlugin: NSObject, FlutterPlugin, MSNotification
 
         MSNotificationHub.setDelegate(self)
         MSNotificationHub.start(connectionString: connectionString, hubName: hubName)
-
-        // If we have a cold start notification, manually trigger the Azure SDK to process it
-        if hasColdStartNotification, let notification = initialNotification {
-            print("🚀 Manually processing cold start notification through Azure SDK")
-            // The SDK should pick this up and call notificationHub(_:didReceivePushNotification:)
-        }
 
         result(nil)
     }
