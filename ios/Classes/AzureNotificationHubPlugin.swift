@@ -227,7 +227,6 @@ public class AzureNotificationHubPlugin: NSObject, FlutterPlugin, MSNotification
             }
         }
 
-        // Flutter expects: data.customData.url
         jsonNotification["data"] = ["customData": customData]
 
         print("📤 Formatted notification for Flutter: \(jsonNotification)")
