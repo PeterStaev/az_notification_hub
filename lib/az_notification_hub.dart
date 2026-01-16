@@ -82,5 +82,15 @@ class AzureNotificationHub {
   /// was completely terminated and the user tapped on a notification to reopen it.
   Future<Map<String, dynamic>?> getInitialMessage() {
     return AzureNotificationHubPlatform.instance.getInitialMessage();
+
+  /// Set the user ID for the device.
+  Future<bool> setUserId(String userId) {
+    return AzureNotificationHubPlatform.instance.setUserId(userId);
+  }
+
+  /// Get the user ID for the device.
+  Future<String> getUserId() {
+    return AzureNotificationHubPlatform.instance.getUserId();
+
   }
 }

@@ -41,8 +41,15 @@ public class AzureNotificationHubPlugin: NSObject, FlutterPlugin, MSNotification
             getInstallationId(result: result)
         case "AzNotificationHub.getPushChannel":
             getPushChannel(result: result)
+
         case "AzNotificationHub.getInitialMessage":
             getInitialMessage(result: result)
+
+        case "AzNotificationHub.setUserId":
+            setUserId(userId: (call.arguments as! [String:Any?])["userId"] as! String, result: result)
+        case "AzNotificationHub.getUserId":
+            getUserId(result: result)
+
         default:
             result(FlutterMethodNotImplemented)
         }
@@ -135,6 +142,7 @@ public class AzureNotificationHubPlugin: NSObject, FlutterPlugin, MSNotification
         result(pushChannel)
     }
 
+
     private func getInitialMessage(result: @escaping FlutterResult) {
         if let notification = initialNotification {
             result(notification)
@@ -189,4 +197,19 @@ public class AzureNotificationHubPlugin: NSObject, FlutterPlugin, MSNotification
 
         return jsonNotification
     }
+
+
+    
+    private func setUserId(userId: String, result: @escaping FlutterResult) {
+        // Note: iOS SDK's setUserId() returns void, unlike Android which returns boolean.
+        // Therefore, we always return true to indicate the method was called successfully.
+        MSNotificationHub.setUserId(userId)
+        result(true)
+    }
+    
+    private func getUserId(result: @escaping FlutterResult) {
+        let userId = MSNotificationHub.getUserId()
+        result(userId ?? "")
+    }
+    
 }

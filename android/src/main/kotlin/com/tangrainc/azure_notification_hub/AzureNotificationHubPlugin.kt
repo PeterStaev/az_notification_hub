@@ -125,6 +125,8 @@ class AzureNotificationHubPlugin :
             "AzNotificationHub.getInitialMessage" -> getInitialMessage(result)
             "AzNotificationHub.getInstallationId" -> getInstallationId(result)
             "AzNotificationHub.getPushChannel" -> getPushChannel(result)
+            "AzNotificationHub.setUserId" -> setUserId(call.argument("userId")!!, result)
+            "AzNotificationHub.getUserId" -> getUserId(result)
 
             else -> result.notImplemented()
         }
@@ -206,5 +208,14 @@ class AzureNotificationHubPlugin :
 
     private fun getPushChannel(result: Result) {
         result.success(NotificationHub.getPushChannel())
+    }
+
+    private fun setUserId(userId: String, result: Result) {
+        val success = NotificationHub.setUserId(userId)
+        result.success(success)
+    }
+
+    private fun getUserId(result: Result) {
+        result.success(NotificationHub.getUserId())
     }
 }

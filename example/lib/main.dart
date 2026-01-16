@@ -65,10 +65,12 @@ class _MyAppState extends State<MyApp> {
   late Future<List<String>> _tagsFuture;
   late Future<String> _installationIdFuture;
   late Future<String> _pushChannelFuture;
+  late Future<String> _userIdFuture;
   bool _isSettingTemplateIn = false;
   bool _isRemovingTemplateIn = false;
   Map<String, dynamic>? _initialMessage;
   bool _checkedInitialMessage = false;
+
 
   @override
   void initState() {
@@ -89,6 +91,7 @@ class _MyAppState extends State<MyApp> {
     _tagsFuture = AzureNotificationHub.instance.getTags();
     _installationIdFuture = AzureNotificationHub.instance.getInstallationId();
     _pushChannelFuture = AzureNotificationHub.instance.getPushChannel();
+    _userIdFuture = AzureNotificationHub.instance.getUserId();
   }
 
   Future<void> _checkInitialMessage() async {
@@ -117,6 +120,7 @@ class _MyAppState extends State<MyApp> {
     _messageSubscription.cancel();
     _messageOpenedAppSubscription.cancel();
     _tagController.dispose();
+    _userIdController.dispose();
 
     super.dispose();
   }
@@ -325,6 +329,59 @@ class _MyAppState extends State<MyApp> {
                     },
                   );
                 },
+              ),
+              const SizedBox(height: 16),
+              Text(
+                "User ID",
+                style: Theme.of(context).textTheme.headlineLarge,
+              ),
+              FutureBuilder(
+                future: _userIdFuture,
+                builder: (context, snapshot) {
+                  return switch (snapshot) {
+                    (AsyncSnapshot<String> s) when s.hasData => SelectableText(s.data!.isEmpty ? '(not set)' : s.data!),
+                    (AsyncSnapshot<String> s) when s.hasError => Text('${s.error}'),
+                    _ => const Text('?'),
+                  };
+                },
+              ),
+              Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      decoration: const InputDecoration(labelText: 'User ID'),
+                      controller: _userIdController,
+                    ),
+                  ),
+                  ElevatedButton(
+                    onPressed: () async {
+                      try {
+                        await AzureNotificationHub.instance
+                            .setUserId(_userIdController.text);
+                        setState(() {
+                          _userIdFuture = AzureNotificationHub.instance.getUserId();
+                          _userIdController.clear();
+                        });
+                      } catch (e) {
+                        print(e);
+                      }
+                    },
+                    child: const Text('Set'),
+                  ),
+                  const SizedBox(width: 8),
+                  ElevatedButton(
+                    onPressed: () async {
+                      try {
+                        setState(() {
+                          _userIdFuture = AzureNotificationHub.instance.getUserId();
+                        });
+                      } catch (e) {
+                        print(e);
+                      }
+                    },
+                    child: const Text('Get'),
+                  ),
+                ],
               ),
               const SizedBox(height: 16),
               Text("Template",
