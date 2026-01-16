@@ -12,18 +12,14 @@ class AzureNotificationHub {
   static AzureNotificationHub get instance => _instance;
 
   /// [Stream] for messages received while the app is in the foreground.
-  Stream<Map<String, dynamic>> get onMessage =>
-      AzureNotificationHubPlatform.onMessage.stream;
+  Stream<Map<String, dynamic>> get onMessage => AzureNotificationHubPlatform.onMessage.stream;
 
   /// [Stream] for message that caused the app to open.
-  Stream<Map<String, dynamic>> get onMessageOpenedApp =>
-      AzureNotificationHubPlatform.onMessageOpenedApp.stream;
+  Stream<Map<String, dynamic>> get onMessageOpenedApp => AzureNotificationHubPlatform.onMessageOpenedApp.stream;
 
   /// Registers a callback to handle background messages.
-  Future<void> registerBackgroundMessageHandler(
-      BackgroundMessageHandler handler) {
-    return AzureNotificationHubPlatform.instance
-        .registerBackgroundMessageHandler(handler);
+  Future<void> registerBackgroundMessageHandler(BackgroundMessageHandler handler) {
+    return AzureNotificationHubPlatform.instance.registerBackgroundMessageHandler(handler);
   }
 
   /// Intializes the plugin and requests notification permissions.
@@ -82,6 +78,7 @@ class AzureNotificationHub {
   /// was completely terminated and the user tapped on a notification to reopen it.
   Future<Map<String, dynamic>?> getInitialMessage() {
     return AzureNotificationHubPlatform.instance.getInitialMessage();
+  }
 
   /// Set the user ID for the device.
   Future<bool> setUserId(String userId) {
@@ -91,6 +88,5 @@ class AzureNotificationHub {
   /// Get the user ID for the device.
   Future<String> getUserId() {
     return AzureNotificationHubPlatform.instance.getUserId();
-
   }
 }

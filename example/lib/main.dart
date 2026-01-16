@@ -3,9 +3,9 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:az_notification_hub/az_notification_hub.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:az_notification_hub/az_notification_hub.dart';
 
 final _platformTemplates = {
   TargetPlatform.android.name: {
@@ -44,8 +44,7 @@ Future<void> _onBackgroundMessageReceived(Map<String, dynamic> message) async {
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   print('main');
-  AzureNotificationHub.instance
-      .registerBackgroundMessageHandler(_onBackgroundMessageReceived);
+  AzureNotificationHub.instance.registerBackgroundMessageHandler(_onBackgroundMessageReceived);
   await AzureNotificationHub.instance.start();
 
   runApp(const MyApp());
@@ -70,21 +69,19 @@ class _MyAppState extends State<MyApp> {
   bool _isRemovingTemplateIn = false;
   Map<String, dynamic>? _initialMessage;
   bool _checkedInitialMessage = false;
-
+  final _userIdController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    
+
     // Check for cold start notification
     _checkInitialMessage();
-    
-    _messageSubscription =
-        AzureNotificationHub.instance.onMessage.listen((message) {
+
+    _messageSubscription = AzureNotificationHub.instance.onMessage.listen((message) {
       print('onMessage: $message');
     });
-    _messageOpenedAppSubscription =
-        AzureNotificationHub.instance.onMessageOpenedApp.listen((message) {
+    _messageOpenedAppSubscription = AzureNotificationHub.instance.onMessageOpenedApp.listen((message) {
       print('Opened App: $message');
     });
 
@@ -101,7 +98,7 @@ class _MyAppState extends State<MyApp> {
         _initialMessage = initialMessage;
         _checkedInitialMessage = true;
       });
-      
+
       if (initialMessage != null) {
         print('Cold Start - Initial Message: $initialMessage');
       } else {
@@ -144,14 +141,10 @@ class _MyAppState extends State<MyApp> {
                   width: double.infinity,
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: _initialMessage != null
-                        ? Colors.green.shade50
-                        : Colors.grey.shade100,
+                    color: _initialMessage != null ? Colors.green.shade50 : Colors.grey.shade100,
                     borderRadius: BorderRadius.circular(8),
                     border: Border.all(
-                      color: _initialMessage != null
-                          ? Colors.green.shade300
-                          : Colors.grey.shade300,
+                      color: _initialMessage != null ? Colors.green.shade300 : Colors.grey.shade300,
                     ),
                   ),
                   child: Column(
@@ -160,20 +153,14 @@ class _MyAppState extends State<MyApp> {
                       Row(
                         children: [
                           Icon(
-                            _initialMessage != null
-                                ? Icons.notifications_active
-                                : Icons.notifications_none,
-                            color: _initialMessage != null
-                                ? Colors.green.shade700
-                                : Colors.grey.shade600,
+                            _initialMessage != null ? Icons.notifications_active : Icons.notifications_none,
+                            color: _initialMessage != null ? Colors.green.shade700 : Colors.grey.shade600,
                           ),
                           const SizedBox(width: 8),
                           Text(
                             "Cold Start Notification",
                             style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                                  color: _initialMessage != null
-                                      ? Colors.green.shade700
-                                      : Colors.grey.shade700,
+                                  color: _initialMessage != null ? Colors.green.shade700 : Colors.grey.shade700,
                                   fontWeight: FontWeight.bold,
                                 ),
                           ),
@@ -181,13 +168,9 @@ class _MyAppState extends State<MyApp> {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        _initialMessage != null
-                            ? "✓ App was launched from a notification tap!"
-                            : "App started normally (not from notification)",
+                        _initialMessage != null ? "✓ App was launched from a notification tap!" : "App started normally (not from notification)",
                         style: TextStyle(
-                          color: _initialMessage != null
-                              ? Colors.green.shade700
-                              : Colors.grey.shade600,
+                          color: _initialMessage != null ? Colors.green.shade700 : Colors.grey.shade600,
                         ),
                       ),
                       if (_initialMessage != null) ...[
@@ -264,8 +247,7 @@ class _MyAppState extends State<MyApp> {
                   ElevatedButton(
                     onPressed: () async {
                       try {
-                        await AzureNotificationHub.instance
-                            .addTags([_tagController.text]);
+                        await AzureNotificationHub.instance.addTags([_tagController.text]);
                         setState(() {
                           _tagsFuture = AzureNotificationHub.instance.getTags();
                           _tagController.clear();
@@ -317,11 +299,9 @@ class _MyAppState extends State<MyApp> {
                         trailing: IconButton(
                           icon: const Icon(Icons.delete),
                           onPressed: () async {
-                            await AzureNotificationHub.instance
-                                .removeTags([tags[index]]);
+                            await AzureNotificationHub.instance.removeTags([tags[index]]);
                             setState(() {
-                              _tagsFuture =
-                                  AzureNotificationHub.instance.getTags();
+                              _tagsFuture = AzureNotificationHub.instance.getTags();
                             });
                           },
                         ),
@@ -356,8 +336,7 @@ class _MyAppState extends State<MyApp> {
                   ElevatedButton(
                     onPressed: () async {
                       try {
-                        await AzureNotificationHub.instance
-                            .setUserId(_userIdController.text);
+                        await AzureNotificationHub.instance.setUserId(_userIdController.text);
                         setState(() {
                           _userIdFuture = AzureNotificationHub.instance.getUserId();
                           _userIdController.clear();
@@ -384,8 +363,7 @@ class _MyAppState extends State<MyApp> {
                 ],
               ),
               const SizedBox(height: 16),
-              Text("Template",
-                  style: Theme.of(context).textTheme.headlineLarge),
+              Text("Template", style: Theme.of(context).textTheme.headlineLarge),
               Row(
                 children: [
                   ElevatedButton(
@@ -394,9 +372,7 @@ class _MyAppState extends State<MyApp> {
                         setState(() {
                           _isSettingTemplateIn = true;
                         });
-                        await AzureNotificationHub.instance.setTemplate(
-                            json.encode(_platformTemplates[
-                                defaultTargetPlatform.name]));
+                        await AzureNotificationHub.instance.setTemplate(json.encode(_platformTemplates[defaultTargetPlatform.name]));
                       } catch (e) {
                         print(e);
                       } finally {
@@ -405,9 +381,7 @@ class _MyAppState extends State<MyApp> {
                         });
                       }
                     },
-                    child: _isSettingTemplateIn
-                        ? const CircularProgressIndicator()
-                        : const Text('Set Template'),
+                    child: _isSettingTemplateIn ? const CircularProgressIndicator() : const Text('Set Template'),
                   ),
                   const SizedBox(width: 16),
                   ElevatedButton(
@@ -425,9 +399,7 @@ class _MyAppState extends State<MyApp> {
                         });
                       }
                     },
-                    child: _isRemovingTemplateIn
-                        ? const CircularProgressIndicator()
-                        : const Text('Remove Template'),
+                    child: _isRemovingTemplateIn ? const CircularProgressIndicator() : const Text('Remove Template'),
                   ),
                 ],
               ),
