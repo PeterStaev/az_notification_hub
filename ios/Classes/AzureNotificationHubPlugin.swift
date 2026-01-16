@@ -12,7 +12,6 @@ public class AzureNotificationHubPlugin: NSObject, FlutterPlugin, MSNotification
 
     // Store as formatted notification ready for Flutter
     private var initialNotification: [String: Any?]?
-    private var hasColdStartNotification = false
 
     public static func register(with registrar: FlutterPluginRegistrar) {
         let channel =  FlutterMethodChannel(name: "plugins.flutter.io/azure_notification_hub", binaryMessenger: registrar.messenger())
@@ -54,22 +53,10 @@ public class AzureNotificationHubPlugin: NSObject, FlutterPlugin, MSNotification
     }
 
     public func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
-        print("🔔 userNotificationCenter didReceive - hasColdStartNotification: \(hasColdStartNotification)")
-
-        // Only set initial notification if we haven't already captured one from cold start
-        // This handles the case where the app was in background (not killed)
-        if initialNotification == nil {
-            let userInfo = response.notification.request.content.userInfo
-            initialNotification = formatNotificationForFlutter(userInfo: userInfo, notification: response.notification)
-            print("📝 Stored notification from didReceive (background state)")
-        }
-
         notificationResponseCompletionHandler = completionHandler
     }
 
     public func notificationHub(_ notificationHub: MSNotificationHub, didReceivePushNotification message: MSNotificationHubMessage) {
-        print("📨 notificationHub didReceivePushNotification")
-
         var jsonNotification: [String : Any?] = [:]
         if (message.title != nil) {
             jsonNotification["title"] = message.title
@@ -79,7 +66,7 @@ public class AzureNotificationHubPlugin: NSObject, FlutterPlugin, MSNotification
         }
         jsonNotification["data"] = message.userInfo
 
-        if (notificationResponseCompletionHandler != nil) {
+        if (notificationResponseCompletionHandler != nil) { // This is needed as when "content-available" is 1, we get the message 2 times
             channel?.invokeMethod("AzNotificationHub.onMessageOpenedApp", arguments: jsonNotification)
         } else if (UIApplication.shared.applicationState == .background || UIApplication.shared.applicationState == .inactive) {
             channel?.invokeMethod("AzNotificationHub.onBackgroundMessage", arguments: jsonNotification)
@@ -149,35 +136,18 @@ public class AzureNotificationHubPlugin: NSObject, FlutterPlugin, MSNotification
     }
 
     private func getInitialMessage(result: @escaping FlutterResult) {
-        print("📲 getInitialMessage called - has notification: \(initialNotification != nil)")
-
         if let notification = initialNotification {
-            print("✅ Returning initial notification: \(notification)")
-            // Clear the initial notification after returning it so it's not read twice
-            initialNotification = nil
-            hasColdStartNotification = false
             result(notification)
         } else {
-            print("❌ No initial notification available")
             result(nil)
         }
     }
 
     public func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [AnyHashable : Any] = [:]) -> Bool {
-        print("🚀 didFinishLaunchingWithOptions called")
-
         // Check if the app was launched from a notification tap (COLD START)
         if let remoteNotification = launchOptions[UIApplication.LaunchOptionsKey.remoteNotification] as? [AnyHashable: Any] {
-            print("🚨 COLD START: App launched from notification")
-            print("📦 Raw notification: \(remoteNotification)")
-
             // Format it properly for Flutter
             initialNotification = formatNotificationForFlutter(userInfo: remoteNotification, notification: nil)
-            hasColdStartNotification = true
-
-            print("✅ Stored formatted cold start notification: \(initialNotification ?? [:])")
-        } else {
-            print("ℹ️ Normal app launch (no notification)")
         }
 
         return true
@@ -207,7 +177,7 @@ public class AzureNotificationHubPlugin: NSObject, FlutterPlugin, MSNotification
             }
         }
 
-        // Build the data structure with customData
+        // Build the data structure - match Android format
         var customData: [String: Any] = [:]
         for (key, value) in userInfo {
             if let stringKey = key as? String, stringKey != "aps" {
@@ -215,9 +185,8 @@ public class AzureNotificationHubPlugin: NSObject, FlutterPlugin, MSNotification
             }
         }
 
-        jsonNotification["data"] = ["customData": customData]
+        jsonNotification["data"] = customData
 
-        print("📤 Formatted notification for Flutter: \(jsonNotification)")
         return jsonNotification
     }
 }
