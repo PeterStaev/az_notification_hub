@@ -73,11 +73,11 @@ public class AzureNotificationHubPlugin: NSObject, FlutterPlugin, MSNotification
         }
         jsonNotification["data"] = message.userInfo
 
-        if (notificationResponseCompletionHandler != nil) { // This is needed as when "content-available" is 1, we get the message 2 times
+        if (notificationResponseCompletionHandler != nil) { 
             channel?.invokeMethod("AzNotificationHub.onMessageOpenedApp", arguments: jsonNotification)
         } else if (UIApplication.shared.applicationState == .background || UIApplication.shared.applicationState == .inactive) {
             channel?.invokeMethod("AzNotificationHub.onBackgroundMessage", arguments: jsonNotification)
-        } else if (notificationPresentationCompletionHandler != nil) {
+        } else if (notificationPresentationCompletionHandler != nil) { // This is needed as when "content-available" is 1, we get the message 2 times
             channel?.invokeMethod("AzNotificationHub.onMessage", arguments: jsonNotification)
         }
 
