@@ -22,6 +22,8 @@ public class AzureNotificationHubPlugin: NSObject, FlutterPlugin, MSNotification
         switch call.method {
         case "AzNotificationHub.start":
             startHubConnection(result: result)
+        case "AzNotificationHub.startWithHubInfo":
+            startHubConnectionWithHubInfo(connectionString: (call.arguments as! [String:Any?])["connectionString"] as! String, hubName: (call.arguments as! [String:Any?])["hubName"] as! String, result: result)
         case "AzNotificationHub.addTags":
             addTags((call.arguments as! [String:Any?])["tags"] as! [String], result: result)
         case "AzNotificationHub.removeTags":
@@ -85,6 +87,13 @@ public class AzureNotificationHubPlugin: NSObject, FlutterPlugin, MSNotification
         let connectionString = Bundle.main.object(forInfoDictionaryKey: "NotificationHubConnectionString") as! String
         let hubName = Bundle.main.object(forInfoDictionaryKey: "NotificationHubName") as! String
         
+        MSNotificationHub.setDelegate(self)
+        MSNotificationHub.start(connectionString: connectionString, hubName: hubName)
+        
+        result(nil)
+    }
+
+    private func startHubConnectionWithHubInfo(connectionString: String, hubName: String, result: @escaping FlutterResult) {
         MSNotificationHub.setDelegate(self)
         MSNotificationHub.start(connectionString: connectionString, hubName: hubName)
         

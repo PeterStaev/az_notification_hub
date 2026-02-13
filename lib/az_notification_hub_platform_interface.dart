@@ -60,6 +60,11 @@ abstract class AzureNotificationHubPlatform extends PlatformInterface {
     throw UnimplementedError('start() has not been implemented.');
   }
 
+  /// Intializes the plugin with provided hub information and requests notification permissions.
+  Future<void> startWithHubInfo(String connectionString, String hubName) {
+    throw UnimplementedError('startWithHubInfo() has not been implemented.');
+  }
+
   /// Add tags for the device. If one of the tags already exists, it will be ignored.
   Future<bool> addTags(List<String> tags) {
     throw UnimplementedError('addTags() has not been implemented.');

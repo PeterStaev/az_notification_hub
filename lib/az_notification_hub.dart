@@ -33,6 +33,14 @@ class AzureNotificationHub {
     return await AzureNotificationHubPlatform.instance.start();
   }
 
+  /// Intializes the plugin with provided hub information and requests notification permissions.
+  Future<void> startWithHubInfo(String connectionString, String hubName) async {
+    await Permission.notification.request();
+
+    return await AzureNotificationHubPlatform.instance
+        .startWithHubInfo(connectionString, hubName);
+  }
+
   /// Add tags for the device. If one of the tags already exists, it will be ignored.
   Future<bool> addTags(List<String> tags) {
     return AzureNotificationHubPlatform.instance.addTags(tags);
