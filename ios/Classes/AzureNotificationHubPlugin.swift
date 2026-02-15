@@ -149,20 +149,22 @@ public class AzureNotificationHubPlugin: NSObject, FlutterPlugin, MSNotification
         } else {
             result(nil)
         }
+
+        initialNotification = nil
     }
 
-    public func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [AnyHashable : Any] = [:]) -> Bool {
+    public func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any] = [:]) -> Bool {
         // Check if the app was launched from a notification tap (COLD START)
         if let remoteNotification = launchOptions[UIApplication.LaunchOptionsKey.remoteNotification] as? [AnyHashable: Any] {
             // Format it properly for Flutter
-            initialNotification = formatNotificationForFlutter(userInfo: remoteNotification, notification: nil)
+            initialNotification = formatNotificationForFlutter(userInfo: remoteNotification)
         }
 
         return true
     }
 
     // CRITICAL: Format notification to match what Flutter expects
-    private func formatNotificationForFlutter(userInfo: [AnyHashable: Any], notification: UNNotification?) -> [String: Any?] {
+    private func formatNotificationForFlutter(userInfo: [AnyHashable: Any]) -> [String: Any?] {
         var jsonNotification: [String: Any?] = [:]
 
         // Extract title and body from APS if available
@@ -172,16 +174,6 @@ public class AzureNotificationHubPlugin: NSObject, FlutterPlugin, MSNotification
                 jsonNotification["body"] = alert["body"] as? String
             } else if let alert = aps["alert"] as? String {
                 jsonNotification["body"] = alert
-            }
-        }
-
-        // If we have a UNNotification, we can also get content from there
-        if let notif = notification {
-            if jsonNotification["title"] == nil {
-                jsonNotification["title"] = notif.request.content.title
-            }
-            if jsonNotification["body"] == nil {
-                jsonNotification["body"] = notif.request.content.body
             }
         }
 
