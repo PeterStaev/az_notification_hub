@@ -70,6 +70,9 @@ plugins {
 </manifest>
 ```
 
+> [!NOTE]  
+> This step is not needed if you are using the `startWithHubInfo` method and passing the connection string and hub name to it.
+
 ### iOS Setup
 
 1. Add the following code to the `application` method in your Flutter app's `ios/Runner/AppDelegate.swift` or `ios/Runner/AppDelegate.m` file
@@ -106,6 +109,9 @@ if (@available(iOS 10.0, *)) {
 </plist>
 ```
 
+> [!NOTE]  
+> This step is not needed if you are using the `startWithHubInfo` method and passing the connection string and hub name to it.
+
 3. Open your Flutter app in XCode and for the `Runner` project, under `Signing & Capabilities` add the `Push Notifications` capability.
 
    If you also want to handle push notifications while your app is in the background, also add the `Background Modes` capability and tick the `Remote notifications` mode.
@@ -125,6 +131,8 @@ void main() async {
   runApp(const MyApp());
 }
 ```
+
+If you do not want to put your connection string and hub name in the `AndroidManifest.xml` and `Info.plist` you can use the `startWithHubInfo()` method and pass your connection info there. `
 
 ### Handling notifications in the foreground
 
