@@ -1,6 +1,6 @@
 name: az_notification_hub
 description: "Flutter plugin for Azure Notification Hubs, a cross-platform messaging solution."
-version: 1.2.0
+version: 1.3.0
 homepage: https://github.com/PeterStaev/az_notification_hub.git
 
 environment:

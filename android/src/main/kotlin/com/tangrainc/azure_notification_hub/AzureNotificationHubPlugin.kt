@@ -111,6 +111,7 @@ class AzureNotificationHubPlugin :
     override fun onMethodCall(call: MethodCall, result: Result) {
         when (call.method) {
             "AzNotificationHub.start" -> startHubConnection(result)
+            "AzNotificationHub.startWithHubInfo" -> startHubConnectionWithHubInfo(call.argument("connectionString")!!, call.argument("hubName")!!, result)
             "AzNotificationHub.addTags" -> addTags(call.argument("tags"), result)
             "AzNotificationHub.getTags" -> result.success(NotificationHub.getTags().toList())
             "AzNotificationHub.removeTags" -> removeTags(call.argument("tags"), result)
@@ -146,6 +147,21 @@ class AzureNotificationHubPlugin :
             application,
             metaData.getString("NotificationHubName"),
             metaData.getString("NotificationHubConnectionString")
+        )
+        NotificationHub.setListener(AzHubListener())
+
+        result.success(null)
+    }
+
+    private fun startHubConnectionWithHubInfo(connectionString: String, hubName: String, result: Result) {
+        if (application == null) {
+            return
+        }
+
+        NotificationHub.start(
+            application,
+            hubName,
+            connectionString
         )
         NotificationHub.setListener(AzHubListener())
 

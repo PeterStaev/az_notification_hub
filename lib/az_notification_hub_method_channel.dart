@@ -107,6 +107,15 @@ class MethodChannelAzureNotificationHub extends AzureNotificationHubPlatform {
   }
 
   @override
+  Future<void> startWithHubInfo(String connectionString, String hubName) {
+    return methodChannel
+        .invokeMethod<void>('AzNotificationHub.startWithHubInfo', {
+      'connectionString': connectionString,
+      'hubName': hubName,
+    });
+  }
+
+  @override
   Future<bool> addTags(List<String> tags) async {
     final success = await methodChannel
         .invokeMethod<bool>('AzNotificationHub.addTags', {'tags': tags});

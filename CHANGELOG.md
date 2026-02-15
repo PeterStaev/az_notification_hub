@@ -1,3 +1,7 @@
+## 1.3.0
+
+- Add user id management
+
 ## 1.2.0
 
 - Add `getInstallationId()` and `getPushChannel()` methods
