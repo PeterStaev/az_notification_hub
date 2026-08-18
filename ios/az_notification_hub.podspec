@@ -13,7 +13,7 @@ A Flutter plugin to work with Azure Notification Hubs.
   s.license          = { :file => '../LICENSE' }
   s.author           = { 'Tangra Inc.' => 'office@tangrainc.com' }
   s.source           = { :path => '.' }
-  s.source_files = 'Classes/**/*'
+  s.source_files = 'az_notification_hub/Sources/az_notification_hub/**/*.swift'
   s.dependency 'Flutter'
   s.platform = :ios, '12.0'
   s.dependency 'AzureNotificationHubs-iOS', '> 3'
