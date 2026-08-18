@@ -1,3 +1,7 @@
+## 2.0.0
+
+- Add Swift Package Manager support
+
 ## 1.4.0
 
 - Add ability to initialize the hub connection during runtime
