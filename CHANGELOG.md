@@ -1,3 +1,7 @@
+## 2.1.0
+
+- Add support for UIScene
+
 ## 2.0.0
 
 - Add Swift Package Manager support
