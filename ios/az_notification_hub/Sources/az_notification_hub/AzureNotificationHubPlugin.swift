@@ -5,7 +5,7 @@ import Foundation
 
 let DEFAULT_TEMPLATE_NAME = "FANH DEFAULT TEMPLATE"
 
-public class AzureNotificationHubPlugin: NSObject, FlutterPlugin, MSNotificationHubDelegate, UNUserNotificationCenterDelegate {
+public class AzureNotificationHubPlugin: NSObject, FlutterPlugin, MSNotificationHubDelegate, UNUserNotificationCenterDelegate, FlutterSceneLifeCycleDelegate {
     private var channel: FlutterMethodChannel?
     private var notificationResponseCompletionHandler: (() -> Void)?
     private var notificationPresentationCompletionHandler: ((UNNotificationPresentationOptions) -> Void)?
@@ -13,12 +13,17 @@ public class AzureNotificationHubPlugin: NSObject, FlutterPlugin, MSNotification
     // Store as formatted notification ready for Flutter
     private var initialNotification: [String: Any?]?
 
+    // App-delegate lifecycle only: the payload iOS supplied in launchOptions, held until a
+    // notification response confirms the launch came from a user tap rather than a silent push.
+    private var pendingLaunchNotification: [String: Any?]?
+
     public static func register(with registrar: FlutterPluginRegistrar) {
         let channel =  FlutterMethodChannel(name: "plugins.flutter.io/azure_notification_hub", binaryMessenger: registrar.messenger())
         let instance = AzureNotificationHubPlugin()
         instance.channel = channel
         registrar.addMethodCallDelegate(instance, channel: channel)
         registrar.addApplicationDelegate(instance)
+        registrar.addSceneDelegate(instance)
     }
 
     public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
@@ -62,6 +67,17 @@ public class AzureNotificationHubPlugin: NSObject, FlutterPlugin, MSNotification
     }
 
     public func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
+        // A pending payload means this launch was triggered by a notification. Only a response
+        // delivered for it means the user actually tapped, which is what the scene lifecycle
+        // reports via connectionOptions.notificationResponse.
+        if let pending = pendingLaunchNotification {
+            pendingLaunchNotification = nil
+
+            if response.notification.request.trigger is UNPushNotificationTrigger {
+                initialNotification = pending
+            }
+        }
+
         notificationResponseCompletionHandler = completionHandler
     }
 
@@ -162,16 +178,40 @@ public class AzureNotificationHubPlugin: NSObject, FlutterPlugin, MSNotification
         initialNotification = nil
     }
 
+    // Cold start path for host apps that have not adopted the UIScene lifecycle.
+    // Flutter skips this fallback for delegates conforming to FlutterSceneLifeCycleDelegate,
+    // so scene-enabled apps handle the launch in scene(_:willConnectTo:options:) instead.
     public func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any] = [:]) -> Bool {
-        // Check if the app was launched from a notification tap (COLD START)
+        // Check if the app was launched by a notification (COLD START). iOS also sets this for a
+        // silent content-available launch with no tap, so hold it until didReceive(_:) confirms.
         if let remoteNotification = launchOptions[UIApplication.LaunchOptionsKey.remoteNotification] as? [AnyHashable: Any] {
             // Format it properly for Flutter
-            initialNotification = formatNotificationForFlutter(userInfo: remoteNotification)
+            pendingLaunchNotification = formatNotificationForFlutter(userInfo: remoteNotification)
         }
 
         return true
     }
 
+    public func scene(
+      _ scene: UIScene,
+      willConnectTo session: UISceneSession,
+      options connectionOptions: UIScene.ConnectionOptions?
+    ) -> Bool {
+        // Check if the app was launched from a notification tap (COLD START)
+        guard let notificationResponse = connectionOptions?.notificationResponse else { return false }
+
+        if notificationResponse.notification.request.trigger is UNPushNotificationTrigger {
+            // Format it properly for Flutter
+            initialNotification = formatNotificationForFlutter(
+                userInfo: notificationResponse.notification.request.content.userInfo
+            )
+        }
+
+        // Never consume the event: returning true would skip Flutter's deep link handling
+        // and the sceneWillConnect fallback that non-scene-aware plugins depend on.
+        return false
+    }
+    
     // CRITICAL: Format notification to match what Flutter expects
     private func formatNotificationForFlutter(userInfo: [AnyHashable: Any]) -> [String: Any?] {
         var jsonNotification: [String: Any?] = [:]

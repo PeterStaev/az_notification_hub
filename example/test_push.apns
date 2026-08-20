@@ -1,0 +1,14 @@
+{
+    "Simulator Target Bundle": "com.tangrainc.azurenotificationhubdemo",
+    "aps": {
+        "alert": {
+            "title": "Test",
+            "body": "Push Notifications Test"
+        },
+        "sound": "default",
+        "content-available": 1
+    },
+    "title": "Test",
+    "body": "Push Notifications Test",
+    "extra": "extra payload data"
+}
